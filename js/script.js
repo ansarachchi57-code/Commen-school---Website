@@ -95,6 +95,14 @@ function initApp() {
 
     // 5. Dynamic Marks Calculation for Interview Board
     initializeMarksCalculation();
+
+    // 6. Initialize Flatpickr for Date Inputs
+    if (typeof flatpickr !== 'undefined') {
+        flatpickr("input[type='date']", {
+            dateFormat: "Y-m-d",
+            allowInput: false // Prevents manual typing errors
+        });
+    }
 }
 
 // Ensure the code runs regardless of when the script is loaded
@@ -132,6 +140,17 @@ function addRow(btn) {
         // Re-initialize mark calculation listeners if it's the marks table
         if (btn.previousElementSibling.className.indexOf('marks-table') !== -1) {
             initializeMarksCalculation();
+        }
+        
+        // Re-initialize flatpickr on new date inputs if any
+        if (typeof flatpickr !== 'undefined') {
+            var newDateInputs = clonedRow.querySelectorAll('input[type="date"]');
+            if (newDateInputs.length > 0) {
+                flatpickr(newDateInputs, {
+                    dateFormat: "Y-m-d",
+                    allowInput: false
+                });
+            }
         }
     }
 }
@@ -205,5 +224,40 @@ function markInputHandler(e) {
     
     if (row) {
         calculateRowTotal(row);
+    }
+}
+
+// Function to remove a row from tables
+function removeRow(btn) {
+    if (!btn) return;
+    
+    var row = btn.parentNode;
+    while (row && row.tagName !== 'TR') {
+        row = row.parentNode;
+    }
+    
+    if (row && row.parentNode) {
+        var tbody = row.parentNode;
+        // Keep at least one row in the table
+        if (tbody.querySelectorAll('tr').length > 1) {
+            tbody.removeChild(row);
+        } else {
+            // If it's the last row, just clear its inputs instead of deleting it
+            var inputs = row.querySelectorAll('input:not([type="checkbox"])');
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].value = '';
+            }
+            var checkboxes = row.querySelectorAll('input[type="checkbox"]');
+            for (var j = 0; j < checkboxes.length; j++) {
+                checkboxes[j].checked = false;
+            }
+            var totalBadges = row.querySelectorAll('.badge');
+            for (var k = 0; k < totalBadges.length; k++) {
+                totalBadges[k].innerHTML = '0';
+            }
+            if (row.parentNode.parentNode.className.indexOf('marks-table') !== -1) {
+                calculateRowTotal(row);
+            }
+        }
     }
 }

@@ -6,6 +6,7 @@
     <title>Siri Dhamma Dhaham Pasala - Management System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Abhaya+Libre:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -54,7 +55,7 @@
                             </div>
                             <div class="form-group">
                                 <label>ලිපිනය (Address)</label>
-                                <input type="text" placeholder="ලිපිනය ඇතුලත් කරන්න...">
+                                <textarea placeholder="ලිපිනය ඇතුලත් කරන්න..." rows="2"></textarea>
                             </div>
                             <div class="form-group">
                                 <label>තේමාව (Theme)</label>
@@ -88,12 +89,26 @@
                 <section id="students" class="page-section">
                     <div class="card">
                         <div class="section-header">
-                            <h2 class="section-title">සිසුන් කළමනාකරණය (Student Management)</h2>
-                            <div class="actions">
+                            <h2 class="section-title" style="margin-bottom:0">සිසුන් කළමනාකරණය (Student Management)</h2>
+                            <div class="actions" style="display:flex; gap:10px; align-items:center;">
+                                <div style="display:flex; align-items:center; gap:5px;">
+                                    <label>දිනය (Date/Month/Year):</label>
+                                    <input type="date" class="custom-select" title="පැමිණීමේ දිනය" style="padding: 0.5rem; width: auto;">
+                                </div>
                                 <select id="student-class-filter" class="custom-select">
                                     <option value="all">සියලුම පන්ති</option>
                                     <option value="1">1 ශ්‍රේණිය</option>
                                     <option value="2">2 ශ්‍රේණිය</option>
+                                    <option value="3">3 ශ්‍රේණිය</option>
+                                    <option value="4">4 ශ්‍රේණිය</option>
+                                    <option value="5">5 ශ්‍රේණිය</option>
+                                    <option value="6">6 ශ්‍රේණිය</option>
+                                    <option value="7">7 ශ්‍රේණිය</option>
+                                    <option value="8">8 ශ්‍රේණිය</option>
+                                    <option value="9">9 ශ්‍රේණිය</option>
+                                    <option value="10">10 ශ්‍රේණිය</option>
+                                    <option value="11">11 ශ්‍රේණිය</option>
+                                    <option value="12">12 ශ්‍රේණිය</option>
                                     <option value="13">13 ශ්‍රේණිය</option>
                                 </select>
                             </div>
@@ -114,11 +129,12 @@
                                     <tr>
                                         <td><input type="text" class="table-input" placeholder="නම..."></td>
                                         <td><input type="text" class="table-input" placeholder="පන්තිය..."></td>
-                                        <td><input type="checkbox" class="attendance-check" title="Present"> අද පැමිණීම</td>
+                                        <td><input type="checkbox" class="attendance-check" title="Present"> පැමිණීම</td>
                                         <td><input type="number" min="0" max="10" class="table-input small-input"></td>
                                         <td><input type="number" min="0" max="10" class="table-input small-input"></td>
                                         <td>
                                             <button class="btn btn-warning" onclick="sendAbsenceSMS(this)"><i class="fab fa-whatsapp"></i> නොපැමිණි බව දැන්වීම</button>
+                                            <button class="btn btn-danger" onclick="removeRow(this)" title="මකන්න" style="padding: 0.6rem 0.8rem;"><i class="fas fa-trash"></i></button>
                                         </td>
                                     </tr>
                                     <!-- Dynamic rows can be added here -->
@@ -132,8 +148,16 @@
                 <!-- Teachers Section -->
                 <section id="teachers" class="page-section">
                     <div class="card">
-                        <h2 class="section-title">ගුරු මණ්ඩලය කළමනාකරණය (Teachers Management)</h2>
-                        <p class="subtitle">ආචාර්ය මණ්ඩලය (20 දෙනා සඳහා)</p>
+                        <div class="section-header">
+                            <div>
+                                <h2 class="section-title" style="margin-bottom:0.5rem">ගුරු මණ්ඩලය කළමනාකරණය (Teachers Management)</h2>
+                                <p class="subtitle" style="margin:0; color:var(--text-muted)">ආචාර්ය මණ්ඩලය (20 දෙනා සඳහා)</p>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:5px;">
+                                <label>දිනය (Date/Month/Year):</label>
+                                <input type="date" class="custom-select" title="පැමිණීමේ දිනය" style="padding: 0.5rem; width: auto;">
+                            </div>
+                        </div>
                         <div class="table-container">
                             <table class="data-table">
                                 <thead>
@@ -151,6 +175,7 @@
                                         <td><input type="checkbox" class="attendance-check"></td>
                                         <td>
                                             <button class="btn btn-warning"><i class="fas fa-sms"></i> නිවාඩු දැනුම්දීම (දින 3)</button>
+                                            <button class="btn btn-danger" onclick="removeRow(this)" title="මකන්න" style="padding: 0.6rem 0.8rem;"><i class="fas fa-trash"></i></button>
                                         </td>
                                     </tr>
                                     <tr>
@@ -159,6 +184,7 @@
                                         <td><input type="checkbox" class="attendance-check"></td>
                                         <td>
                                             <button class="btn btn-warning"><i class="fas fa-sms"></i> නිවාඩු දැනුම්දීම (දින 3)</button>
+                                            <button class="btn btn-danger" onclick="removeRow(this)" title="මකන්න" style="padding: 0.6rem 0.8rem;"><i class="fas fa-trash"></i></button>
                                         </td>
                                     </tr>
                                     <tr>
@@ -167,6 +193,7 @@
                                         <td><input type="checkbox" class="attendance-check"></td>
                                         <td>
                                             <button class="btn btn-warning"><i class="fas fa-sms"></i> නිවාඩු දැනුම්දීම (දින 3)</button>
+                                            <button class="btn btn-danger" onclick="removeRow(this)" title="මකන්න" style="padding: 0.6rem 0.8rem;"><i class="fas fa-trash"></i></button>
                                         </td>
                                     </tr>
                                     <!-- Other specific roles -->
@@ -174,31 +201,46 @@
                                         <td><input type="text" class="table-input" placeholder="ශිෂ්‍ය නායක භාර..."></td>
                                         <td>ශිෂ්‍ය නායක භාර ආචාර්ය (Prefect Master)</td>
                                         <td><input type="checkbox" class="attendance-check"></td>
-                                        <td><button class="btn btn-warning"><i class="fas fa-sms"></i> නිවාඩු දැනුම්දීම</button></td>
+                                        <td>
+                                            <button class="btn btn-warning"><i class="fas fa-sms"></i> නිවාඩු දැනුම්දීම</button>
+                                            <button class="btn btn-danger" onclick="removeRow(this)" title="මකන්න" style="padding: 0.6rem 0.8rem;"><i class="fas fa-trash"></i></button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td><input type="text" class="table-input" placeholder="අභිධර්මාචාර්ය..."></td>
                                         <td>අභිධර්මාචාර්ය (Abhidhamma)</td>
                                         <td><input type="checkbox" class="attendance-check"></td>
-                                        <td><button class="btn btn-warning"><i class="fas fa-sms"></i> නිවාඩු දැනුම්දීම</button></td>
+                                        <td>
+                                            <button class="btn btn-warning"><i class="fas fa-sms"></i> නිවාඩු දැනුම්දීම</button>
+                                            <button class="btn btn-danger" onclick="removeRow(this)" title="මකන්න" style="padding: 0.6rem 0.8rem;"><i class="fas fa-trash"></i></button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td><input type="text" class="table-input" placeholder="පාලි භාෂා ආචාර්ය..."></td>
                                         <td>පාලි භාෂා ආචාර්ය (Pali)</td>
                                         <td><input type="checkbox" class="attendance-check"></td>
-                                        <td><button class="btn btn-warning"><i class="fas fa-sms"></i> නිවාඩු දැනුම්දීම</button></td>
+                                        <td>
+                                            <button class="btn btn-warning"><i class="fas fa-sms"></i> නිවාඩු දැනුම්දීම</button>
+                                            <button class="btn btn-danger" onclick="removeRow(this)" title="මකන්න" style="padding: 0.6rem 0.8rem;"><i class="fas fa-trash"></i></button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td><input type="text" class="table-input" placeholder="උත්සව සංවිධායක..."></td>
                                         <td>උත්සව සංවිධායක (Events)</td>
                                         <td><input type="checkbox" class="attendance-check"></td>
-                                        <td><button class="btn btn-warning"><i class="fas fa-sms"></i> නිවාඩු දැනුම්දීම</button></td>
+                                        <td>
+                                            <button class="btn btn-warning"><i class="fas fa-sms"></i> නිවාඩු දැනුම්දීම</button>
+                                            <button class="btn btn-danger" onclick="removeRow(this)" title="මකන්න" style="padding: 0.6rem 0.8rem;"><i class="fas fa-trash"></i></button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td><input type="text" class="table-input" placeholder="චාරිකා සංවිධායක..."></td>
                                         <td>චාරිකා සංවිධායක (Trips)</td>
                                         <td><input type="checkbox" class="attendance-check"></td>
-                                        <td><button class="btn btn-warning"><i class="fas fa-sms"></i> නිවාඩු දැනුම්දීම</button></td>
+                                        <td>
+                                            <button class="btn btn-warning"><i class="fas fa-sms"></i> නිවාඩු දැනුම්දීම</button>
+                                            <button class="btn btn-danger" onclick="removeRow(this)" title="මකන්න" style="padding: 0.6rem 0.8rem;"><i class="fas fa-trash"></i></button>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -214,7 +256,13 @@
                     <div class="card premium-card">
                         <h2 class="section-title">ශිෂ්‍ය නායක කළමනාකරණය (Prefects Management)</h2>
                         
-                        <h3 class="subsection-title">නායක නාමලේඛනය සහ පැමිණීම</h3>
+                        <div class="section-header">
+                            <h3 class="subsection-title" style="margin:0">නායක නාමලේඛනය සහ පැමිණීම</h3>
+                            <div style="display:flex; align-items:center; gap:5px;">
+                                <label>දිනය (Date/Month/Year):</label>
+                                <input type="date" class="custom-select" title="පැමිණීමේ දිනය" style="padding: 0.5rem; width: auto;">
+                            </div>
+                        </div>
                         <div class="table-container mb-4">
                             <table class="data-table">
                                 <thead>
@@ -222,6 +270,7 @@
                                         <th>නම (Name)</th>
                                         <th>තනතුර (Position)</th>
                                         <th>පැමිණීම (Attendance)</th>
+                                        <th>ක්‍රියාමාර්ග (Actions)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -229,16 +278,19 @@
                                         <td><input type="text" class="table-input" placeholder="ප්‍රධාන ශිෂ්‍ය නායක/නායිකා..."></td>
                                         <td>ප්‍රධාන ශිෂ්‍ය නායක (Head Prefect)</td>
                                         <td><input type="checkbox" class="attendance-check"></td>
+                                        <td><button class="btn btn-danger" onclick="removeRow(this)" title="මකන්න" style="padding: 0.6rem 0.8rem;"><i class="fas fa-trash"></i></button></td>
                                     </tr>
                                     <tr>
                                         <td><input type="text" class="table-input" placeholder="උප ප්‍රධාන..."></td>
                                         <td>උප ප්‍රධාන (Deputy Head Prefect)</td>
                                         <td><input type="checkbox" class="attendance-check"></td>
+                                        <td><button class="btn btn-danger" onclick="removeRow(this)" title="මකන්න" style="padding: 0.6rem 0.8rem;"><i class="fas fa-trash"></i></button></td>
                                     </tr>
                                     <tr>
                                         <td><input type="text" class="table-input" placeholder="සාමාන්‍ය නායක..."></td>
                                         <td>සාමාන්‍ය ශිෂ්‍ය නායක (Prefect)</td>
                                         <td><input type="checkbox" class="attendance-check"></td>
+                                        <td><button class="btn btn-danger" onclick="removeRow(this)" title="මකන්න" style="padding: 0.6rem 0.8rem;"><i class="fas fa-trash"></i></button></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -264,6 +316,7 @@
                                         <th title="ඉදිරිපත් කිරීම (10)">ඉදිරිපත් කිරීම (10)</th>
                                         <th title="පන්ති භාර ගුරු (10)">ගුරු ලකුණු (10)</th>
                                         <th>එකතුව (100)</th>
+                                        <th>ක්‍රියාමාර්ග (Actions)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -279,6 +332,7 @@
                                         <td><input type="number" max="10" placeholder="0" class="mark-input"></td>
                                         <td><input type="number" max="10" placeholder="0" class="mark-input"></td>
                                         <td class="total-marks"><span class="badge badge-success">0</span></td>
+                                        <td><button class="btn btn-danger" onclick="removeRow(this)" title="මකන්න" style="padding: 0.6rem 0.8rem;"><i class="fas fa-trash"></i></button></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -296,7 +350,16 @@
                                 <select class="custom-select">
                                     <option value="1">1 ශ්‍රේණිය</option>
                                     <option value="2">2 ශ්‍රේණිය</option>
-                                    <!-- Fill others dynamically -->
+                                    <option value="3">3 ශ්‍රේණිය</option>
+                                    <option value="4">4 ශ්‍රේණිය</option>
+                                    <option value="5">5 ශ්‍රේණිය</option>
+                                    <option value="6">6 ශ්‍රේණිය</option>
+                                    <option value="7">7 ශ්‍රේණිය</option>
+                                    <option value="8">8 ශ්‍රේණිය</option>
+                                    <option value="9">9 ශ්‍රේණිය</option>
+                                    <option value="10">10 ශ්‍රේණිය</option>
+                                    <option value="11">11 ශ්‍රේණිය</option>
+                                    <option value="12">12 ශ්‍රේණිය</option>
                                     <option value="13">13 ශ්‍රේණිය</option>
                                 </select>
                             </div>
@@ -316,6 +379,7 @@
                                         <th>මල් පූජා ලකුණු (Flower)</th>
                                         <th>ගිලන්පස ලකුණු (Gilanpasa)</th>
                                         <th>තනතුර (Role/Position)</th>
+                                        <th>ක්‍රියාමාර්ග (Actions)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -327,6 +391,7 @@
                                         <td>
                                             <input type="text" class="table-input" placeholder="උදා: පන්ති නායක...">
                                         </td>
+                                        <td><button class="btn btn-danger" onclick="removeRow(this)" title="මකන්න" style="padding: 0.6rem 0.8rem;"><i class="fas fa-trash"></i></button></td>
                                     </tr>
                                     <tr>
                                         <td><input type="text" class="table-input" placeholder="නම..."></td>
@@ -336,6 +401,7 @@
                                         <td>
                                             <input type="text" class="table-input" placeholder="උදා: ශිෂ්‍ය නායක...">
                                         </td>
+                                        <td><button class="btn btn-danger" onclick="removeRow(this)" title="මකන්න" style="padding: 0.6rem 0.8rem;"><i class="fas fa-trash"></i></button></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -360,7 +426,13 @@
                 <!-- Notices Section -->
                 <section id="notices" class="page-section">
                     <div class="card premium-card">
-                        <h2 class="section-title">දැන්වීම් කළමනාකරණය (Notice Management)</h2>
+                        <div class="section-header">
+                            <h2 class="section-title" style="margin:0">දැන්වීම් කළමනාකරණය (Notice Management)</h2>
+                            <div style="display:flex; align-items:center; gap:5px;">
+                                <label>පළකළ දිනය (Date/Month/Year):</label>
+                                <input type="date" class="custom-select" title="දැන්වීමේ දිනය" style="padding: 0.5rem; width: auto;">
+                            </div>
+                        </div>
                         
                         <div class="form-grid layout-2-col">
                             <div class="form-group">
@@ -377,6 +449,16 @@
                                 <select class="custom-select">
                                     <option value="1">1 ශ්‍රේණිය</option>
                                     <option value="2">2 ශ්‍රේණිය</option>
+                                    <option value="3">3 ශ්‍රේණිය</option>
+                                    <option value="4">4 ශ්‍රේණිය</option>
+                                    <option value="5">5 ශ්‍රේණිය</option>
+                                    <option value="6">6 ශ්‍රේණිය</option>
+                                    <option value="7">7 ශ්‍රේණිය</option>
+                                    <option value="8">8 ශ්‍රේණිය</option>
+                                    <option value="9">9 ශ්‍රේණිය</option>
+                                    <option value="10">10 ශ්‍රේණිය</option>
+                                    <option value="11">11 ශ්‍රේණිය</option>
+                                    <option value="12">12 ශ්‍රේණිය</option>
                                     <option value="13">13 ශ්‍රේණිය</option>
                                 </select>
                             </div>
@@ -442,6 +524,7 @@
         </main>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="js/script.js"></script>
 </body>
 </html>
