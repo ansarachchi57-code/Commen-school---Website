@@ -7,8 +7,8 @@ var deferredPrompt;
 
 // Authentication State
 var currentUser = {
-    role: 'viewer', // 'viewer', 'class_teacher', 'flower_teacher', 'principal', 'admin'
-    assignedClass: null
+    role: localStorage.getItem('userRole') || 'viewer', // 'viewer', 'class_teacher', 'flower_teacher', 'principal', 'admin'
+    assignedClass: localStorage.getItem('assignedClass') || null
 };
 
 function handleRoleChange() {
@@ -33,13 +33,13 @@ function processLogin() {
     var pin = document.getElementById('login-pin').value;
     var assignedClass = document.getElementById('login-class').value;
     
-    if (role === 'admin' && pin === 'admin123') {
+    if (role === 'admin' && (pin === 'admin123' || pin === '1234')) {
         currentUser.role = 'admin';
-    } else if (role === 'principal' && pin === 'prin123') {
+    } else if (role === 'principal' && (pin === 'prin123' || pin === '1234')) {
         currentUser.role = 'principal';
-    } else if (role === 'flower_teacher' && pin === 'flower123') {
+    } else if (role === 'flower_teacher' && (pin === 'flower123' || pin === '1234')) {
         currentUser.role = 'flower_teacher';
-    } else if (role === 'class_teacher' && pin === 'class123') {
+    } else if (role === 'class_teacher' && (pin === 'class123' || pin === '1234')) {
         currentUser.role = 'class_teacher';
         currentUser.assignedClass = assignedClass;
     } else if (role === 'viewer') {
@@ -49,8 +49,26 @@ function processLogin() {
         return;
     }
     
+    // Persistence
+    localStorage.setItem('userRole', currentUser.role);
+    if (currentUser.assignedClass) {
+        localStorage.setItem('assignedClass', currentUser.assignedClass);
+    } else {
+        localStorage.removeItem('assignedClass');
+    }
+    
     document.getElementById('login-modal').style.display = 'none';
     applyAccessControl();
+    
+    // Feedback
+    var roleNames = {
+        'admin': 'ප්‍රධාන පරිපාලක (Admin)',
+        'principal': 'ප්‍රධානාචාර්ය (Principal)',
+        'flower_teacher': 'මල් ලකුණු භාර ගුරු (Flower Teacher)',
+        'class_teacher': 'පන්ති භාර ගුරු (Class Teacher)',
+        'viewer': 'නරඹන්නෙකු (Viewer)'
+    };
+    alert(roleNames[currentUser.role] + " ලෙස සාර්ථකව ඇතුල් විය! (Logged in as " + currentUser.role + ")");
 }
 
 function applyAccessControl() {
@@ -137,7 +155,21 @@ function applyAccessControl() {
         uploadZone.style.display = (currentUser.role === 'admin') ? 'flex' : 'none';
     }
     
-    // Viewer overrides (none, view only)
+    // Update Role Status Badge
+    var badge = document.getElementById('role-status-badge');
+    if (badge) {
+        var labels = {
+            'admin': 'පරිපාලක (Admin)',
+            'principal': 'ප්‍රධානාචාර්ය (Principal)',
+            'flower_teacher': 'මල් ගුරු (Teacher)',
+            'class_teacher': (currentUser.assignedClass || '') + ' පන්ති ගුරු',
+            'viewer': 'නරඹන්නා (Viewer)'
+        };
+        badge.innerText = labels[currentUser.role] || labels['viewer'];
+        badge.style.display = (currentUser.role === 'viewer') ? 'none' : 'block';
+        badge.style.background = (currentUser.role === 'admin') ? 'rgba(239, 68, 68, 0.1)' : 'rgba(99, 102, 241, 0.1)';
+        badge.style.color = (currentUser.role === 'admin') ? 'var(--danger-color)' : 'var(--primary-color)';
+    }
 }
 
 // PWA Install Prompt Listener
@@ -247,6 +279,9 @@ function initApp() {
                     }
                 }
             }
+
+            // Ensure access control is correct for the new section
+            if (typeof applyAccessControl === 'function') applyAccessControl();
 
             // Close sidebar on mobile after clicking
             if (window.innerWidth <= 992) {
