@@ -20,12 +20,20 @@
             <div class="form-group mb-4">
                 <label>ඔබ කවුරුන්ද? (Role)</label>
                 <select id="login-role" class="custom-select" onchange="handleRoleChange()" style="width:100%; padding:0.8rem; font-size:1.1rem; border-radius:8px;">
+                    <option value="">තෝරන්න (Select)...</option>
+                    <option value="admin">පරිපාලක / ගුරුභවතුන් (Management / Staff)</option>
                     <option value="viewer">සිසුවා / දෙමාපියා (Student / Parent) - නරඹන්නෙකු පමණි</option>
-                    <option value="class_teacher">පන්ති භාර ගුරු (Class Teacher)</option>
-                    <option value="flower_teacher">මල් ලකුණු භාර ගුරු (Flower Teacher)</option>
-                    <option value="principal">ප්‍රධානාචාර්ය (Principal)</option>
-                    <option value="admin">ප්‍රධාන පරිපාලක (Admin)</option>
                 </select>
+                <!-- Hidden options that will be revealed if 'Management' is selected -->
+                <div id="extended-role-selection" style="display:none; margin-top:1rem;">
+                    <label>විශේෂිත භූමිකාව (Specific Role)</label>
+                    <select id="sub-role" class="custom-select" onchange="handleSubRoleChange()" style="width:100%; padding:0.8rem; font-size:1rem; border-radius:8px;">
+                        <option value="admin">ප්‍රධාන පරිපාලක (Admin)</option>
+                        <option value="principal">ප්‍රධානාචාර්ය (Principal)</option>
+                        <option value="flower_teacher">මල් ලකුණු භාර ගුරු (Flower Teacher)</option>
+                        <option value="class_teacher">පන්ති භාර ගුරු (Class Teacher)</option>
+                    </select>
+                </div>
             </div>
             <div class="form-group mb-4" id="login-class-group" style="display:none;">
                 <label>ඔබගේ පන්තිය (Your Class)</label>
@@ -70,6 +78,7 @@
                 <li data-target="classes"><i class="fas fa-users-class"></i> <span>පන්ති (Classes)</span></li>
                 <li data-target="notices"><i class="fas fa-bell"></i> <span>දැන්වීම් (Notices)</span></li>
                 <li data-target="gallery"><i class="fas fa-images"></i> <span>ගැලරිය (Gallery)</span></li>
+                <li data-target="books"><i class="fas fa-book"></i> <span>පොත් / පාඩම් (Books)</span></li>
             </ul>
         </nav>
 
@@ -84,6 +93,7 @@
                     </div>
                 </div>
                 <div class="header-user">
+                    <button class="btn btn-warning" id="refresh-btn" onclick="location.reload(true)" title="නැවත පූරණය (Refresh)" style="padding: 0.5rem 1rem; font-size: 0.85rem; margin-right: 0.5rem;"><i class="fas fa-sync-alt"></i> Refresh</button>
                     <button class="btn btn-primary btn-install" id="install-btn" style="display:none; padding: 0.5rem 1rem; font-size: 0.85rem;"><i class="fas fa-download"></i> Install (ස්ථාපනය කරන්න)</button>
                     <button class="btn-theme-toggle" id="theme-toggle" title="වර්ණ සංකලනය (Theme)"><i class="fas fa-palette"></i></button>
                     <div id="role-status-badge" style="margin-right: 1rem; font-size: 0.8rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: rgba(99, 102, 241, 0.1); color: var(--primary-color); font-weight: 600;"></div>
@@ -110,6 +120,7 @@
                     <div class="menu-item" onclick="document.querySelector('[data-target=\'classes\']').click()"><i class="fas fa-users-class"></i> පන්ති</div>
                     <div class="menu-item" onclick="document.querySelector('[data-target=\'notices\']').click()"><i class="fas fa-bell"></i> දැන්වීම්</div>
                     <div class="menu-item" onclick="document.querySelector('[data-target=\'gallery\']').click()"><i class="fas fa-images"></i> ගැලරිය</div>
+                    <div class="menu-item" onclick="document.querySelector('[data-target=\'books\']').click()"><i class="fas fa-book"></i> පොත්/පාඩම්</div>
                 </div>
 
                 <!-- Home Section - School Management -->
@@ -535,7 +546,6 @@
                     </div>
                 </section>
 
-                <!-- Gallery Section -->
                 <section id="gallery" class="page-section">
                     <div class="card">
                         <div class="section-header">
@@ -554,6 +564,76 @@
                         </div>
                    </div>
                 </section>
+
+                <!-- Books/Lessons Section -->
+                <section id="books" class="page-section">
+                    <div class="card premium-card">
+                        <h2 class="section-title">පාඩම් මාලාව (Lessons / Books)</h2>
+                        <p class="subtitle mb-4">නව පොතේ පාඩම් මෙතැනින් කියවන්න</p>
+
+                        <!-- Admin Level Control -->
+                        <div class="admin-controls mb-4" id="books-admin-controls" style="display:none; background: rgba(99, 102, 241, 0.05); padding: 1.5rem; border-radius: var(--radius-md); border: 1px dashed var(--primary-color); margin-bottom: 2rem;">
+                            <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap;">
+                                <label style="font-weight: 700; color: var(--primary-color); font-size: 1.1rem; margin:0;">
+                                    <i class="fas fa-unlock-alt"></i> සිසුන් සඳහා විවෘත පාඩම් මට්ටම (Unlock Level):
+                                </label>
+                                <select id="unlock-level" class="custom-select" style="max-width: 250px;" onchange="updateUnlockLevel()">
+                                    <option value="0">සියල්ල වසා ඇත (Locked)</option>
+                                    <option value="1">පාඩම 01 පමණක් විවෘතයි</option>
+                                    <option value="2">පාඩම 01 සහ 02 විවෘතයි</option>
+                                </select>
+                                <span class="badge badge-success" id="unlock-status-badge">මට්ටම: 1</span>
+                            </div>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; margin-bottom:0;">* ගුරුතුමා/ගුරුතුමිය විසින් අගුල විවෘත කළ පසු සිසුන්ට පාඩම් බැලිය හැක.</p>
+                        </div>
+                        
+                        <div class="lessons-grid">
+                            <!-- Lesson 1 -->
+                            <div class="lesson-card" id="lesson-card-1">
+                                <div class="lock-overlay"><i class="fas fa-lock"></i></div>
+                                <div class="lesson-badge">පාඩම 01</div>
+                                <div class="lesson-image" style="height: 200px; overflow: hidden;">
+                                    <img src="assets/dharma_wheel.png" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <div class="lesson-content">
+                                    <h3>තෙරුවන් හඳුනාගනිමු</h3>
+                                    <p class="lesson-desc">බුද්ධ, ධම්ම, සංඝ යන රත්නත්‍රය පිළිබඳ මූලික හැඳින්වීම සහ එහි අසිරිමත් ගුණාංග පිළිබඳව මෙම පාඩමෙන් විස්තර කෙරේ.</p>
+                                    <div class="lesson-footer">
+                                        <button class="btn btn-primary btn-sm" onclick="showLesson(1)"><i class="fas fa-book-open"></i> කියවන්න</button>
+                                        <span class="read-time"><i class="far fa-clock"></i> විනාඩි 10</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Lesson 2 -->
+                            <div class="lesson-card" id="lesson-card-2">
+                                <div class="lock-overlay"><i class="fas fa-lock"></i></div>
+                                <div class="lesson-badge">පාඩම 02</div>
+                                <div class="lesson-image" style="height: 200px; overflow: hidden;">
+                                    <img src="assets/jetavana_monastery.png" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <div class="lesson-content">
+                                    <h3>බුදු සිරිතේ අවසන් 25 වසර</h3>
+                                    <p class="lesson-desc">බුදුරජාණන් වහන්සේගේ බුද්ධත්වයෙන් පසු අවසන් වසර 25 තුළ සිදු වූ සුවිශේෂී සිදුවීම් සහ දේශනා පිළිබඳව මෙහි අඩංගු වේ.</p>
+                                    <div class="lesson-footer">
+                                        <button class="btn btn-primary btn-sm" onclick="showLesson(2)"><i class="fas fa-book-open"></i> කියවන්න</button>
+                                        <span class="read-time"><i class="far fa-clock"></i> විනාඩි 15</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Lesson Content Modal -->
+                <div id="lesson-modal" class="modal-overlay">
+                    <div class="modal-content premium-card lesson-modal-content">
+                        <button class="close-modal" onclick="closeLesson()">&times;</button>
+                        <div id="lesson-detail-body">
+                            <!-- Detailed lesson content will be injected here -->
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <!-- Message / Feedback Box -->
@@ -568,6 +648,21 @@
             </div>
         </main>
     </div>
+
+    <!-- Update Notification Toast -->
+    <div id="update-toast" class="update-toast" style="display:none; position:fixed; bottom:20px; right:20px; background:var(--primary-color); color:white; padding:1.5rem; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.2); z-index:9999; max-width:350px; animation: slideUp 0.5s ease-out;">
+        <h4 style="margin-top:0;"><i class="fas fa-sync"></i> නව යාවත්කාලීනයක් තිබේ!</h4>
+        <p>පද්ධතියේ නව අනුවාදයක් (Update) පවතී. දැන්ම යාවත්කාලීන කරන්නද?</p>
+        <div style="display:flex; gap:10px; margin-top:1rem;">
+            <button class="btn btn-light" id="update-now-btn" style="flex:1; background:white; color:var(--primary-color); border:none; padding:0.6rem; border-radius:6px; font-weight:700;">ඔව් (Update Now)</button>
+            <button class="btn btn-outline-light" onclick="this.parentElement.parentElement.style.display='none'" style="flex:1; background:transparent; color:white; border:1px solid white; padding:0.6rem; border-radius:6px;">පසුව (Later)</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDK (Compat - same as Samagi Society page) -->
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="js/script.js"></script>
